@@ -147,3 +147,4 @@ Lesson Link: [optional URL]
 - Chunks include course/lesson context automatically
 - always use uv to run the server do not use pip directly. use uv to run python
 - make sure to use uv to manage all dependencies
+- never run server for me, I run it myself
