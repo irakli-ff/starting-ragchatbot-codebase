@@ -5,7 +5,7 @@ const API_URL = '/api';
 let currentSessionId = null;
 
 // DOM elements
-let chatMessages, chatInput, sendButton, totalCourses, courseTitles;
+let chatMessages, chatInput, sendButton, totalCourses, courseTitles, newChatButton;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     sendButton = document.getElementById('sendButton');
     totalCourses = document.getElementById('totalCourses');
     courseTitles = document.getElementById('courseTitles');
+    newChatButton = document.getElementById('newChatButton');
     
     setupEventListeners();
     createNewSession();
@@ -29,6 +30,13 @@ function setupEventListeners() {
         if (e.key === 'Enter') sendMessage();
     });
     
+    // New Chat button
+    if (newChatButton) {
+        newChatButton.addEventListener('click', async () => {
+            // Call the backend to create a new session explicitly
+            await startNewChat();
+        });
+    }
     
     // Suggested questions
     document.querySelectorAll('.suggested-item').forEach(button => {
@@ -122,10 +130,42 @@ function addMessage(content, type, sources = null, isWelcome = false) {
     let html = `<div class="message-content">${displayContent}</div>`;
     
     if (sources && sources.length > 0) {
+        // Process sources and deduplicate
+        const uniqueSources = [];
+        const seenSources = new Set();
+        
+        sources.forEach(source => {
+            let sourceKey, sourceObj;
+            
+            if (typeof source === 'object' && source !== null) {
+                sourceKey = source.text;
+                sourceObj = source;
+            } else {
+                sourceKey = String(source);
+                sourceObj = { text: sourceKey };
+            }
+            
+            if (!seenSources.has(sourceKey)) {
+                seenSources.add(sourceKey);
+                uniqueSources.push(sourceObj);
+            }
+        });
+        
+        // Format sources as a list with icons
+        const formattedSources = uniqueSources.map(source => {
+            const icon = '📚'; // Book icon for sources
+            if (source.link) {
+                return `<li><a href="${source.link}" target="_blank" rel="noopener noreferrer">${icon} ${source.text}</a></li>`;
+            }
+            return `<li>${icon} ${source.text}</li>`;
+        }).join('\n');
+        
         html += `
-            <details class="sources-collapsible">
-                <summary class="sources-header">Sources</summary>
-                <div class="sources-content">${sources.join(', ')}</div>
+            <details class="sources-collapsible" open>
+                <summary class="sources-header">Sources (${uniqueSources.length})</summary>
+                <ul class="sources-list">
+                    ${formattedSources}
+                </ul>
             </details>
         `;
     }
@@ -150,6 +190,46 @@ async function createNewSession() {
     currentSessionId = null;
     chatMessages.innerHTML = '';
     addMessage('Welcome to the Course Materials Assistant! I can help you with questions about courses, lessons and specific content. What would you like to know?', 'assistant', null, true);
+}
+
+// New chat function that creates a new session via backend
+async function startNewChat() {
+    try {
+        // Call backend to create a new session and cleanup old one if needed
+        const response = await fetch(`${API_URL}/sessions/new`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                old_session_id: currentSessionId
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            currentSessionId = data.session_id;
+            
+            // Clear the chat UI
+            chatMessages.innerHTML = '';
+            chatInput.value = '';
+            
+            // Add welcome message
+            addMessage('Welcome to the Course Materials Assistant! I can help you with questions about courses, lessons and specific content. What would you like to know?', 'assistant', null, true);
+            
+            // Focus on input
+            chatInput.focus();
+        } else {
+            // If backend endpoint doesn't exist, fall back to client-side reset
+            createNewSession();
+            chatInput.focus();
+        }
+    } catch (error) {
+        console.log('New session endpoint not available, using client-side reset');
+        // Fall back to client-side session reset
+        createNewSession();
+        chatInput.focus();
+    }
 }
 
 // Load course statistics
