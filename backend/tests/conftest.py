@@ -1,15 +1,16 @@
-import pytest
-import tempfile
 import os
 import sys
+import tempfile
 from pathlib import Path
+
+import pytest
 
 # Add parent directory to path to import backend modules
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from models import Course, Lesson, CourseChunk
 from config import Config
-from vector_store import VectorStore, SearchResults
+from models import Course, CourseChunk, Lesson
+from vector_store import SearchResults, VectorStore
 
 
 @pytest.fixture
@@ -39,24 +40,20 @@ def sample_course():
     course = Course(
         title="Test Course on Python Programming",
         course_link="https://example.com/course",
-        instructor="John Doe"
+        instructor="John Doe",
     )
     course.lessons = [
         Lesson(
             lesson_number=0,
             title="Introduction to Python",
-            lesson_link="https://example.com/lesson0"
+            lesson_link="https://example.com/lesson0",
         ),
         Lesson(
             lesson_number=1,
             title="Variables and Data Types",
-            lesson_link="https://example.com/lesson1"
+            lesson_link="https://example.com/lesson1",
         ),
-        Lesson(
-            lesson_number=2,
-            title="Control Flow",
-            lesson_link=None
-        )
+        Lesson(lesson_number=2, title="Control Flow", lesson_link=None),
     ]
     return course
 
@@ -66,25 +63,25 @@ def sample_chunks(sample_course):
     """Create sample course chunks for testing"""
     chunks = []
     chunk_index = 0
-    
+
     # Map lesson content for testing
     lesson_content = {
         0: "Welcome to Python programming. Python is a versatile language.",
         1: "In Python, variables store data. Common data types include strings, integers, and lists.",
-        2: "Control flow in Python uses if statements, for loops, and while loops to control program execution."
+        2: "Control flow in Python uses if statements, for loops, and while loops to control program execution.",
     }
-    
+
     for lesson in sample_course.lessons:
         # Create chunks for each lesson
         chunk = CourseChunk(
             course_title=sample_course.title,
             lesson_number=lesson.lesson_number,
             content=lesson_content.get(lesson.lesson_number, "Default content"),
-            chunk_index=chunk_index
+            chunk_index=chunk_index,
         )
         chunks.append(chunk)
         chunk_index += 1
-    
+
     return chunks
 
 
@@ -94,13 +91,13 @@ def sample_search_results():
     return SearchResults(
         documents=[
             "Python is a versatile programming language.",
-            "Variables in Python can store different data types."
+            "Variables in Python can store different data types.",
         ],
         metadata=[
             {"course_title": "Test Course on Python Programming", "lesson_number": 0},
-            {"course_title": "Test Course on Python Programming", "lesson_number": 1}
+            {"course_title": "Test Course on Python Programming", "lesson_number": 1},
         ],
-        distances=[0.1, 0.2]
+        distances=[0.1, 0.2],
     )
 
 
@@ -122,7 +119,7 @@ Let's begin by understanding the basics of how LLMs can control computers.
 Lesson 2: Advanced Techniques
 This lesson covers advanced techniques for computer use without a specific link.
 """
-    
+
     doc_path = tmp_path / "test_course.txt"
     doc_path.write_text(doc_content)
     return str(doc_path)
@@ -131,6 +128,7 @@ This lesson covers advanced techniques for computer use without a specific link.
 @pytest.fixture
 def mock_anthropic_response():
     """Mock response from Anthropic API"""
+
     class MockContent:
         def __init__(self, text=None, type="text", name=None, input=None, id=None):
             self.text = text
@@ -138,17 +136,23 @@ def mock_anthropic_response():
             self.name = name
             self.input = input
             self.id = id
-    
+
     class MockResponse:
-        def __init__(self, content_text="Test response", stop_reason="end", tool_use=False):
+        def __init__(
+            self, content_text="Test response", stop_reason="end", tool_use=False
+        ):
             if tool_use:
                 self.stop_reason = "tool_use"
                 self.content = [
-                    MockContent(type="tool_use", name="search_course_content", 
-                               input={"query": "Python basics"}, id="tool_123")
+                    MockContent(
+                        type="tool_use",
+                        name="search_course_content",
+                        input={"query": "Python basics"},
+                        id="tool_123",
+                    )
                 ]
             else:
                 self.stop_reason = stop_reason
                 self.content = [MockContent(text=content_text)]
-    
+
     return MockResponse

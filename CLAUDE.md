@@ -37,8 +37,8 @@ cd backend && uv run uvicorn app:app --reload --port 8000 --host 0.0.0.0
 # Install uv if not present
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Sync dependencies
-uv sync
+# Sync dependencies (including dev tools)
+uv sync --dev
 
 # Run with uv
 uv run python main.py
@@ -46,6 +46,39 @@ uv run python main.py
 # Start FastAPI server with auto-reload
 cd backend && uv run uvicorn app:app --reload
 ```
+
+### Code Quality Tools
+
+```bash
+# Format code automatically
+./dev.sh format
+
+# Run all quality checks
+./dev.sh check  # or just ./dev.sh
+
+# Run tests
+./dev.sh test
+
+# Run everything (checks + tests)
+./dev.sh all
+
+# Install pre-commit hooks (one-time setup)
+./dev.sh pre-commit
+uv run pre-commit run --all-files  # Run hooks manually
+
+# Individual tools
+uv run black backend/ --exclude chroma_db
+uv run isort backend/ --skip chroma_db
+uv run flake8 backend/
+uv run mypy backend/
+```
+
+**Quality Tools Configured:**
+- **Black**: Code formatter (88 char line length)
+- **isort**: Import sorter (Black-compatible profile)
+- **flake8**: Linter (PEP8 compliance)
+- **mypy**: Type checker
+- **pre-commit**: Git hooks for automatic quality checks
 
 ## Architecture Overview
 

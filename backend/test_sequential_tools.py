@@ -5,9 +5,10 @@ This test shows how Claude can now make up to 2 sequential tool calls,
 using results from the first call to inform the second.
 """
 
-from unittest.mock import Mock, patch
 import sys
 from pathlib import Path
+from unittest.mock import Mock, patch
+
 sys.path.insert(0, str(Path(__file__).parent))
 
 from ai_generator import AIGenerator
@@ -15,14 +16,14 @@ from ai_generator import AIGenerator
 
 def demonstrate_sequential_tools():
     """Demonstrate the sequential tool calling flow with a mock scenario"""
-    
+
     print("=" * 60)
     print("SEQUENTIAL TOOL CALLING DEMONSTRATION")
     print("=" * 60)
-    
+
     # Create mock tool manager
     mock_tool_manager = Mock()
-    
+
     # Define what tools return
     def execute_tool_mock(tool_name, **kwargs):
         if tool_name == "get_course_outline":
@@ -43,9 +44,9 @@ def demonstrate_sequential_tools():
 - Lesson 10: Advanced Design Patterns
 """
         elif tool_name == "search_course_content":
-            query = kwargs.get('query', '')
-            lesson = kwargs.get('lesson_number')
-            if 'metaclass' in query.lower() or lesson == 5:
+            query = kwargs.get("query", "")
+            lesson = kwargs.get("lesson_number")
+            if "metaclass" in query.lower() or lesson == 5:
                 return """
 [Advanced Python Programming - Lesson 5]
 Metaclasses are classes whose instances are classes. They allow you to:
@@ -66,40 +67,40 @@ class LoggingMeta(type):
 """
             else:
                 return "Content about " + query
-    
+
     mock_tool_manager.execute_tool.side_effect = execute_tool_mock
-    
+
     # Tool definitions
     tools = [
         {
             "name": "get_course_outline",
             "description": "Get course outline",
-            "input_schema": {"type": "object", "properties": {}}
+            "input_schema": {"type": "object", "properties": {}},
         },
         {
             "name": "search_course_content",
             "description": "Search course content",
-            "input_schema": {"type": "object", "properties": {}}
-        }
+            "input_schema": {"type": "object", "properties": {}},
+        },
     ]
-    
+
     # Example queries that would benefit from sequential tool calls
     queries = [
         "What does lesson 5 of the Advanced Python course cover?",
         "Find information about the most advanced topic in the Python course",
-        "Compare the content between lesson 2 and lesson 5 of the course"
+        "Compare the content between lesson 2 and lesson 5 of the course",
     ]
-    
+
     print("\nExample queries that benefit from sequential tool calling:")
     print("-" * 60)
-    
+
     for i, query in enumerate(queries, 1):
         print(f"\nQuery {i}: {query}")
         print("\nExpected flow:")
         print("  1. First tool call: get_course_outline to understand structure")
         print("  2. Second tool call: search_course_content for specific lesson/topic")
         print("  3. Final response: Synthesized answer from both tool results")
-    
+
     print("\n" + "=" * 60)
     print("KEY IMPROVEMENTS:")
     print("-" * 60)
@@ -114,11 +115,13 @@ class LoggingMeta(type):
 if __name__ == "__main__":
     # Run demonstration
     demonstrate_sequential_tools()
-    
+
     print("\n" + "=" * 60)
     print("TESTING NOTES:")
     print("-" * 60)
-    print("• Run full test suite: cd backend && uv run pytest tests/test_ai_generator.py -v")
+    print(
+        "• Run full test suite: cd backend && uv run pytest tests/test_ai_generator.py -v"
+    )
     print("• New tests added:")
     print("  - test_sequential_two_rounds: Full 2-round flow")
     print("  - test_max_rounds_termination: Handles >2 rounds gracefully")
