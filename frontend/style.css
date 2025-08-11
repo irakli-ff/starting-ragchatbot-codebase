@@ -24,22 +24,25 @@
     --welcome-border: #2563eb;
 }
 
-/* Light Mode Variables - Enhanced for better accessibility */
+/* Light Mode Variables - Cheerful and Inviting Design */
 [data-theme="light"] {
-    --primary-color: #1d4ed8;  /* Darker blue for better contrast */
-    --primary-hover: #1e40af;  /* Even darker on hover */
-    --background: #ffffff;
-    --surface: #f7f8fa;  /* Slightly warmer gray */
-    --surface-hover: #e5e7eb;  /* Better hover state */
-    --text-primary: #111827;  /* Darker for WCAG AAA compliance */
-    --text-secondary: #4b5563;  /* Darker secondary text */
-    --border-color: #d1d5db;  /* More visible borders */
-    --user-message: #1d4ed8;  /* Matches primary color */
-    --assistant-message: #f3f4f6;  /* Better contrast with text */
-    --shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);  /* Softer, layered shadows */
-    --focus-ring: rgba(29, 78, 216, 0.25);  /* More visible focus ring */
-    --welcome-bg: #eff6ff;
-    --welcome-border: #3b82f6;  /* Slightly lighter border */
+    --primary-color: #3b82f6;  /* Bright, friendly blue */
+    --primary-hover: #2563eb;  /* Vivid blue on hover */
+    --background: #fefefe;  /* Pure white with slight warmth */
+    --surface: #f8fafc;  /* Soft, clean surface */
+    --surface-hover: #e0f2fe;  /* Light cyan hover state */
+    --text-primary: #1e293b;  /* Rich, readable dark */
+    --text-secondary: #64748b;  /* Balanced secondary text */
+    --border-color: #cbd5e1;  /* Soft, approachable borders */
+    --user-message: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);  /* Cheerful blue-to-purple gradient */
+    --assistant-message: #f1f5f9;  /* Light, airy background */
+    --shadow: 0 4px 12px -2px rgba(59, 130, 246, 0.08), 0 2px 6px -1px rgba(59, 130, 246, 0.06);  /* Blue-tinted soft shadows */
+    --focus-ring: rgba(59, 130, 246, 0.3);  /* Bright, cheerful focus ring */
+    --welcome-bg: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);  /* Soft gradient welcome background */
+    --welcome-border: #60a5fa;  /* Bright, welcoming border */
+    --accent-green: #10b981;  /* Success/positive accent */
+    --accent-purple: #8b5cf6;  /* Creative accent */
+    --accent-orange: #f59e0b;  /* Warm attention accent */
 }
 
 /* Base Styles */
@@ -90,6 +93,19 @@ body {
     background: var(--surface-hover);
     transform: scale(1.05);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Light mode theme toggle with cheerful styling */
+[data-theme="light"] .theme-toggle {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 2px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+    border-color: var(--primary-color);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.2);
 }
 
 .theme-toggle:active {
@@ -311,10 +327,11 @@ header h1 {
     border-bottom-right-radius: 4px;
 }
 
-/* Ensure good contrast in light mode for user messages */
+/* Light mode user messages with cheerful gradient */
 [data-theme="light"] .message.user .message-content {
     background: var(--user-message);
     color: white;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
 }
 
 .message.assistant .message-content {
@@ -553,7 +570,18 @@ header h1 {
 #sendButton:hover:not(:disabled) {
     background: var(--primary-hover);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+/* Light mode send button with cheerful styling */
+[data-theme="light"] #sendButton {
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+[data-theme="light"] #sendButton:hover:not(:disabled) {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
 }
 
 #sendButton:active:not(:disabled) {
@@ -734,6 +762,21 @@ details[open] .suggested-header::before {
     margin-bottom: 0.75rem;
 }
 
+/* Light mode stats with cheerful gradients */
+[data-theme="light"] .stat-item {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 1px 3px rgba(59, 130, 246, 0.05);
+}
+
+[data-theme="light"] .stat-value {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-purple) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+}
+
 .stat-item:last-child {
     margin-bottom: 0;
 }
@@ -856,6 +899,21 @@ details[open] .suggested-header::before {
     border-color: var(--primary-color);
     color: var(--primary-color);
     transform: translateX(2px);
+}
+
+/* Light mode suggested items with cheerful gradients */
+[data-theme="light"] .suggested-item {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 1px 3px rgba(59, 130, 246, 0.05);
+}
+
+[data-theme="light"] .suggested-item:hover {
+    background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    transform: translateX(3px) translateY(-1px);
 }
 
 /* Responsive Design */
