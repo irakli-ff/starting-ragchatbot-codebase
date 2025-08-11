@@ -5,7 +5,7 @@ const API_URL = '/api';
 let currentSessionId = null;
 
 // DOM elements
-let chatMessages, chatInput, sendButton, totalCourses, courseTitles, newChatButton;
+let chatMessages, chatInput, sendButton, totalCourses, courseTitles, newChatButton, themeToggle;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,7 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
     totalCourses = document.getElementById('totalCourses');
     courseTitles = document.getElementById('courseTitles');
     newChatButton = document.getElementById('newChatButton');
+    themeToggle = document.getElementById('themeToggle');
     
+    initializeTheme();
     setupEventListeners();
     createNewSession();
     loadCourseStats();
@@ -38,6 +40,18 @@ function setupEventListeners() {
         });
     }
     
+    // Theme toggle
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+        // Keyboard support (Enter and Space)
+        themeToggle.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleTheme();
+            }
+        });
+    }
+    
     // Suggested questions
     document.querySelectorAll('.suggested-item').forEach(button => {
         button.addEventListener('click', (e) => {
@@ -48,6 +62,48 @@ function setupEventListeners() {
     });
 }
 
+// Theme Functions
+function initializeTheme() {
+    // Check localStorage for saved theme preference
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    // Use saved theme, or system preference, or default to dark
+    const theme = savedTheme || (prefersDarkMode ? 'dark' : 'light');
+    
+    // Apply theme
+    if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+    }
+    
+    // Save preference if not already saved
+    if (!savedTheme) {
+        localStorage.setItem('theme', theme);
+    }
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
+    // Apply new theme
+    if (newTheme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+    }
+    
+    // Save preference
+    localStorage.setItem('theme', newTheme);
+    
+    // Optional: Add a subtle animation feedback
+    themeToggle.style.transform = 'rotate(360deg)';
+    setTimeout(() => {
+        themeToggle.style.transform = '';
+    }, 300);
+}
 
 // Chat Functions
 async function sendMessage() {
